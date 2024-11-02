@@ -177,9 +177,12 @@ static void *palloc(Arena *pool, size_t size) {
 
 static void *pzalloc(Arena *pool, size_t size) {
 	void* output = palloc(pool, size);
+	/*
 	for(size_t i = 0; i < size; i++) {
 		((char *)output)[i] = '\0';
 	}
+	*/
+	memset(output, 0, size);
 	return output;
 }
 

@@ -6,10 +6,10 @@ single-header arena allocator in C99
 #### Interface
 - Functions take `Arena` references as arguments
 - `void *palloc(*pool, size)` is used like `malloc`
-- `void *pzalloc(*pool, size)` is used like `malloc`, but zeroes like `calloc`
+- `void *pzalloc(*pool, size)` is used like `malloc`, but zeroes the resulting memory
 - `void *pGrowAlloc(*pool, *ptr, old_size, new_size)`  can grow allocations and copy contents, somewhat like `realloc` but only supporting increases in size
 - `char *pNewStr(*pool, *str)` is like `strcpy` but allocates the new null-terminated string in the arena
-- `int resetArena(*pool)` will free all pages in the linked-list, and re-initialize a new first block using the largest page size before reset
+- `int resetArena(*pool)` will free all pages in the linked-list, page using the largest page size before reset
 
 #### Example
 ```
@@ -35,8 +35,8 @@ int main(void) {
 ```
 
 #### Settings
-- `MEMORY_HOG_FACTOR` will be multiplied by requested allocation size to determine new page size, in case the current page is not large enough. Larger values result in fewer overall calls to `malloc`.
-- `DEFAULT_PAGE_SIZE` is set initially at `4096` and is the first page size upon initialization using `initArena()`
+- `MEMORY_HOG_FACTOR` will be multiplied by requested allocation size to determine new page size, in case the current page is not large enough. Larger values result in fewer overall calls to `malloc`. Default value `8`
+- `DEFAULT_PAGE_SIZE` is the first page size upon initialization using `initArena()`. Default value `4096`
 
 #### Miscellaneous
 - `int setAllocator(fn_ptr)` allows overriding `malloc` if desired. Replacement must be of the form `void *(*alloc_fn)(size_t)` (like `malloc`)
