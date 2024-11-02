@@ -13,8 +13,6 @@
 
 int main(void) {
 
-	printf("hello, arena\n");
-
 	Arena p;
 	initArena(&p);
 

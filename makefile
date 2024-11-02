@@ -5,9 +5,7 @@ OS := $(shell uname)
 mkBinDir := $(shell mkdir -p bin)
 mkObjDir := $(shell mkdir -p obj)
 
-BIN = ./bin/main.run
-
-MAIN = 	./obj/main.o
+BIN = ./bin/example.run
 
 default: reset $(BIN)
 ifeq ($(OS),Darwin) 
@@ -21,11 +19,11 @@ reset: clear $(BIN)
 run: reset $(BIN)
 	$(BIN)
 
-$(BIN): $(MAIN)
-	$(CC) $(CFLAGS) $(MAIN) -o $(BIN)
+$(BIN): ./obj/example.o
+	$(CC) $(CFLAGS) ./obj/example.o -o $(BIN)
 
-./obj/main.o: ./src/main.c
-	$(CC) $(CFLAGS) -c ./src/main.c -o ./obj/main.o
+./obj/example.o: ./src/example.c
+	$(CC) $(CFLAGS) -c ./src/example.c -o ./obj/example.o
 	
 clear: clear-bin
 

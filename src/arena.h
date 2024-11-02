@@ -44,9 +44,9 @@ size_t getBytesUsed(Arena *pool);
 
 size_t getBytesAllocd(Arena *pool);
 
-void printPoolInfo(Arena *pool);
+void printArenaInfo(Arena *pool);
 
-static Page *newInitBlock(size_t block_size) {
+static Page *newInitPage(size_t block_size) {
 	
 	Page *block = malloc(sizeof(Page));
 	if(!block) {
@@ -70,7 +70,7 @@ int initArena(Arena *pool) {
 
 	size_t block_size = DEFAULT_PAGE_SIZE;
 
-	pool->first_block = newInitBlock(block_size);
+	pool->first_block = newInitPage(block_size);
 
 	pool->bytes_used = 0;
 	pool->bytes_allocd = sizeof(Arena) + sizeof(Page) + block_size;
@@ -107,7 +107,7 @@ int resetArena(Arena *pool) {
 		curr = next;
 	}
 
-	pool->first_block = newInitBlock(pool->last_block_size);
+	pool->first_block = newInitPage(pool->last_block_size);
 	pool->last_block = pool->first_block;
 
 	pool->next_free = pool->first_block->data;
@@ -130,7 +130,7 @@ void *palloc(Arena *pool, size_t size) {
 			new_block_size = new_block_size * 2;
 		}
 
-		new_block = newInitBlock(new_block_size);
+		new_block = newInitPage(new_block_size);
 		if(!new_block) {
 			return NULL;
 		}
@@ -193,7 +193,7 @@ size_t getBytesAllocd(Arena *pool) {
 	return pool->bytes_allocd;
 }
 
-void printPoolInfo(Arena *pool) {
+void printArenaInfo(Arena *pool) {
 	printf("\nArena INFO - \n");
 	printf("\tUSED: %zu, (%f MB)\n", getBytesUsed(pool), (double)getBytesUsed(pool) / (1024 * 1024));
 	printf("\tALLOCD: %zu, (%f MB)\n", getBytesAllocd(pool), (double)getBytesAllocd(pool) / (1024 * 1024));
