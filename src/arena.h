@@ -5,9 +5,13 @@
 #include <string.h>
 
 #define MEMORY_HOG_FACTOR 8
-#define DEFAULT_PAGE_SIZE 1024
+#define DEFAULT_PAGE_SIZE 4096
 
 struct s_Page;
+
+typedef void *(*alloc_fn)(size_t);
+
+static alloc_fn allocator = malloc;
 
 typedef struct s_Arena {
 	size_t bytes_used;
@@ -25,6 +29,8 @@ typedef struct s_Page {
 	size_t data_size;
 	struct s_Page *next;
 } Page;
+
+static int setAllocator(alloc_fn fn_ptr);
 
 static int initArena(Arena *pool);
 
@@ -46,15 +52,27 @@ static size_t getBytesAllocd(Arena *pool);
 
 static void printArenaInfo(Arena *pool);
 
+static int setAllocator(alloc_fn fn_ptr) {
+	
+	void *validation = NULL;
+	if(!(validation = fn_ptr(8))) {
+		return 1;
+	}
+	free(validation);
+
+	allocator = fn_ptr;
+	return 0;
+}
+
 static Page *newInitPage(size_t block_size) {
 	
-	Page *page = malloc(sizeof(Page));
+	Page *page = allocator(sizeof(Page));
 	if(!page) {
 		fprintf(stderr, "page alloc failed! exiting...\n");
 		exit(1);
 	}
 
-	page->data = malloc(block_size);
+	page->data = allocator(block_size);
 	if(!page->data) {
 		fprintf(stderr, "page data alloc failed! exiting...\n");
 		exit(2);

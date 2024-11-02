@@ -6,15 +6,17 @@
 
 #include "arena.h"
 
-#define BIGNUM 100000
+#define BIG_NUMBER 100000
 
 int main(void) {
+
+	// setAllocator(malloc);
 
 	Arena p;
 	initArena(&p);
 
-	uint64_t *arr = palloc(&p, BIGNUM * sizeof(uint32_t));
-	for(uint64_t i = 0; i < BIGNUM; i++) {
+	uint64_t *arr = palloc(&p, BIG_NUMBER * sizeof(uint32_t));
+	for(uint64_t i = 0; i < BIG_NUMBER; i++) {
 		arr[i] = i * i;
 		printf("%" PRIu64 ",%" PRIu64 "\n", i, arr[i]);
 	}
