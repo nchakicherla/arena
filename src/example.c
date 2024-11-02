@@ -19,7 +19,7 @@ int main(void) {
 		for(uint64_t j = 0; j < BIGNUM; j++) {
 			arr[i][j] = i * j;
 		}
-	}
+	} 
 	printArenaInfo(&p);
 	termArena(&p);
 	return 0;
