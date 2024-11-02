@@ -16,8 +16,8 @@ typedef struct s_Arena {
 	void *next_free;
 	size_t next_free_size;
 	size_t last_block_size;
-	struct s_Page *last_block;
-	struct s_Page *first_block;
+	struct s_Page *last_page;
+	struct s_Page *first_page;
 } Arena;
 
 typedef struct s_Page {
@@ -26,64 +26,64 @@ typedef struct s_Page {
 	struct s_Page *next;
 } Page;
 
-int initArena(Arena *pool);
+static int initArena(Arena *pool);
 
-int resetArena(Arena *pool);
+static int resetArena(Arena *pool);
 
-int termArena(Arena *pool);
+static int termArena(Arena *pool);
 
-void *palloc(Arena *pool, size_t size);
+static void *palloc(Arena *pool, size_t size);
 
-void *pzalloc(Arena *pool, size_t size);
+static void *pzalloc(Arena *pool, size_t size);
 
-void *pGrowAlloc(void *ptr, size_t old_size, size_t new_size, Arena *pool);
+static void *pGrowAlloc(void *ptr, size_t old_size, size_t new_size, Arena *pool);
 
-char *pNewStr(char *str, Arena *pool);
+static char *pNewStr(char *str, Arena *pool);
 
-size_t getBytesUsed(Arena *pool);
+static size_t getBytesUsed(Arena *pool);
 
-size_t getBytesAllocd(Arena *pool);
+static size_t getBytesAllocd(Arena *pool);
 
-void printArenaInfo(Arena *pool);
+static void printArenaInfo(Arena *pool);
 
 static Page *newInitPage(size_t block_size) {
 	
-	Page *block = malloc(sizeof(Page));
-	if(!block) {
-		fprintf(stderr, "block alloc failed! exiting...\n");
+	Page *page = malloc(sizeof(Page));
+	if(!page) {
+		fprintf(stderr, "page alloc failed! exiting...\n");
 		exit(1);
 	}
 
-	block->data = malloc(block_size);
-	if(!block->data) {
-		fprintf(stderr, "block data alloc failed! exiting...\n");
+	page->data = malloc(block_size);
+	if(!page->data) {
+		fprintf(stderr, "page data alloc failed! exiting...\n");
 		exit(2);
 	}
 
-	block->data_size = block_size;
-	block->next = NULL;
+	page->data_size = block_size;
+	page->next = NULL;
 	
-	return block;
+	return page;
 }
 
-int initArena(Arena *pool) {
+static int initArena(Arena *pool) {
 
 	size_t block_size = DEFAULT_PAGE_SIZE;
 
-	pool->first_block = newInitPage(block_size);
+	pool->first_page = newInitPage(block_size);
 
 	pool->bytes_used = 0;
 	pool->bytes_allocd = sizeof(Arena) + sizeof(Page) + block_size;
-	pool->next_free = pool->first_block->data;
-	pool->next_free_size = pool->first_block->data_size;
+	pool->next_free = pool->first_page->data;
+	pool->next_free_size = pool->first_page->data_size;
 	pool->last_block_size = block_size;
-	pool->last_block = pool->first_block;
+	pool->last_page = pool->first_page;
 	return 0;
 }
 
-int termArena(Arena *pool) {
+static int termArena(Arena *pool) {
 
-	Page *curr = pool->first_block;
+	Page *curr = pool->first_page;
 	Page *next = NULL;
 
 	while(curr) {
@@ -95,9 +95,9 @@ int termArena(Arena *pool) {
 	return 0;
 }
 
-int resetArena(Arena *pool) {
+static int resetArena(Arena *pool) {
 
-	Page *curr = pool->first_block;
+	Page *curr = pool->first_page;
 	Page *next = NULL;
 
 	while(curr) {
@@ -107,21 +107,21 @@ int resetArena(Arena *pool) {
 		curr = next;
 	}
 
-	pool->first_block = newInitPage(pool->last_block_size);
-	pool->last_block = pool->first_block;
+	pool->first_page = newInitPage(pool->last_block_size);
+	pool->last_page = pool->first_page;
 
-	pool->next_free = pool->first_block->data;
-	pool->next_free_size = pool->first_block->data_size;
+	pool->next_free = pool->first_page->data;
+	pool->next_free_size = pool->first_page->data_size;
 
 	pool->bytes_used = 0;
 	pool->bytes_allocd = sizeof(Arena) + sizeof(Page) + pool->last_block_size;
 	return 0;
 }
 
-void *palloc(Arena *pool, size_t size) {
+static void *palloc(Arena *pool, size_t size) {
 	
 	if(pool->next_free_size < size) {
-		Page *last_block = pool->last_block;
+		Page *last_page = pool->last_page;
 		Page *new_block = NULL;
 
 		size_t new_block_size = pool->last_block_size;
@@ -134,18 +134,18 @@ void *palloc(Arena *pool, size_t size) {
 		if(!new_block) {
 			return NULL;
 		}
-		last_block->next = new_block;
-		last_block = new_block;
+		last_page->next = new_block;
+		last_page = new_block;
 
-		pool->last_block = new_block;
+		pool->last_page = new_block;
 		pool->last_block_size = new_block_size;
-		pool->next_free = (char *)last_block->data + size;
+		pool->next_free = (char *)last_page->data + size;
 		pool->next_free_size = new_block_size - size;
 
 		pool->bytes_used += size;
 		pool->bytes_allocd += sizeof(Page) + new_block_size;
 
-		return last_block->data;
+		return last_page->data;
 	}
 
 	void *output = pool->next_free;
@@ -157,7 +157,7 @@ void *palloc(Arena *pool, size_t size) {
 	return output;
 }
 
-void *pzalloc(Arena *pool, size_t size) {
+static void *pzalloc(Arena *pool, size_t size) {
 	void* output = palloc(pool, size);
 	for(size_t i = 0; i < size; i++) {
 		((char *)output)[i] = '\0';
@@ -165,13 +165,13 @@ void *pzalloc(Arena *pool, size_t size) {
 	return output;
 }
 
-void *pGrowAlloc(void *ptr, size_t old_size, size_t new_size, Arena *pool) {
+static void *pGrowAlloc(void *ptr, size_t old_size, size_t new_size, Arena *pool) {
 	void *output_ptr = palloc(pool, new_size);
 	memcpy(output_ptr, ptr, old_size);
 	return output_ptr;
 }
 
-char *pNewStr(char *str, Arena *pool) {
+static char *pNewStr(char *str, Arena *pool) {
 	
 	char *output = NULL;
 	size_t len = strlen(str);
@@ -185,15 +185,15 @@ char *pNewStr(char *str, Arena *pool) {
 	return output;
 }
 
-size_t getBytesUsed(Arena *pool) {
+static size_t getBytesUsed(Arena *pool) {
 	return pool->bytes_used;
 }
 
-size_t getBytesAllocd(Arena *pool) {
+static size_t getBytesAllocd(Arena *pool) {
 	return pool->bytes_allocd;
 }
 
-void printArenaInfo(Arena *pool) {
+static void printArenaInfo(Arena *pool) {
 	printf("\nArena INFO - \n");
 	printf("\tUSED: %zu, (%f MB)\n", getBytesUsed(pool), (double)getBytesUsed(pool) / (1024 * 1024));
 	printf("\tALLOCD: %zu, (%f MB)\n", getBytesAllocd(pool), (double)getBytesAllocd(pool) / (1024 * 1024));

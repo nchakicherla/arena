@@ -4,9 +4,6 @@
 #include <inttypes.h>
 #include <time.h>
 
-#define IDX_MAX 	(SIZE_MAX - 1)
-#define IDX_ERR 	(SIZE_MAX)
-
 #include "arena.h"
 
 #define BIGNUM 100000
@@ -16,10 +13,10 @@ int main(void) {
 	Arena p;
 	initArena(&p);
 
-	uint32_t *arr = palloc(&p, BIGNUM);
-	for(size_t i = 0; i < BIGNUM; ++i) {
+	uint64_t *arr = palloc(&p, BIGNUM * sizeof(uint32_t));
+	for(uint64_t i = 0; i < BIGNUM; i++) {
 		arr[i] = i * i;
-		printf("%" PRId32 "\n", arr[i]);
+		printf("%" PRIu64 ",%" PRIu64 "\n", i, arr[i]);
 	}
 
 	termArena(&p);

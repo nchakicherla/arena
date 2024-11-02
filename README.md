@@ -1,2 +1,2 @@
 # arena
-simple arena allocator in C99
+single-header arena allocator in C99
