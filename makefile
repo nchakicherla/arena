@@ -22,7 +22,7 @@ run: reset $(BIN)
 $(BIN): ./obj/example.o
 	$(CC) $(CFLAGS) ./obj/example.o -o $(BIN)
 
-./obj/example.o: ./src/example.c
+./obj/example.o: ./src/example.c ./src/arena.h
 	$(CC) $(CFLAGS) -c ./src/example.c -o ./obj/example.o
 	
 clear: clear-bin
