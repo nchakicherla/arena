@@ -5,11 +5,12 @@ single-header arena allocator in C99
 
 #### Interface
 - Functions take `Arena` references as arguments
-- `void *palloc(*pool, size)` is used like `malloc`
-- `void *pzalloc(*pool, size)` is used like `malloc`, but zeroes the resulting memory
-- `void *pGrowAlloc(*pool, *ptr, old_size, new_size)`  can grow allocations and copy contents, somewhat like `realloc` but only supporting increases in size
-- `char *pNewStr(*pool, *str)` is like `strcpy` but allocates the new null-terminated string in the arena
-- `int resetArena(*pool)` will free all pages in the linked-list, page using the largest page size before reset
+- `int initArena(*arena)` initializes an arena, typically stack-allocated as shown in the example below
+- `void *palloc(*arena, size)` is used like `malloc`
+- `void *pzalloc(*arena, size)` is used like `malloc`, but zeroes using `memset`
+- `void *pGrowAlloc(*arena, *ptr, old_size, new_size)`  can grow allocations and copy contents, somewhat like `realloc` but only supporting increases in size
+- `char *pNewStr(*arena, *str)` is like `strcpy` but allocates the new null-terminated string in the arena
+- `int resetArena(*arena)` will free all pages in the linked-list, page using the largest page size before reset
 
 #### Example
 ```
@@ -40,4 +41,4 @@ int main(void) {
 
 #### Miscellaneous
 - `int setAllocator(fn_ptr)` allows overriding `malloc` if desired. Replacement must be of the form `void *(*alloc_fn)(size_t)` (like `malloc`)
-- `getBytesUsed(*pool)`, `getBytesAllocd(*pool)`, and `printArenaInfo(*pool)` can be used to retrieve or print usage information at runtime
+- `getBytesUsed(*arena)`, `getBytesAllocd(*arena)`, and `printArenaInfo(*arena)` can be used to retrieve or print usage information at runtime
