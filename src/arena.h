@@ -42,9 +42,9 @@ static void *palloc(Arena *pool, size_t size);
 
 static void *pzalloc(Arena *pool, size_t size);
 
-static void *pGrowAlloc(void *ptr, size_t old_size, size_t new_size, Arena *pool);
+static void *pGrowAlloc(Arena *pool, void *ptr, size_t old_size, size_t new_size);
 
-static char *pNewStr(char *str, Arena *pool);
+static char *pNewStr(Arena *pool, char *str);
 
 static size_t getBytesUsed(Arena *pool);
 
@@ -183,13 +183,13 @@ static void *pzalloc(Arena *pool, size_t size) {
 	return output;
 }
 
-static void *pGrowAlloc(void *ptr, size_t old_size, size_t new_size, Arena *pool) {
+static void *pGrowAlloc(Arena *pool, void *ptr, size_t old_size, size_t new_size) {
 	void *output_ptr = palloc(pool, new_size);
 	memcpy(output_ptr, ptr, old_size);
 	return output_ptr;
 }
 
-static char *pNewStr(char *str, Arena *pool) {
+static char *pNewStr(Arena *pool, char *str) {
 	
 	char *output = NULL;
 	size_t len = strlen(str);

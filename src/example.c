@@ -1,26 +1,26 @@
 #include <stdio.h>
-#include <stddef.h>
-#include <stdbool.h>
 #include <inttypes.h>
-#include <time.h>
 
 #include "arena.h"
 
-#define BIG_NUMBER 100000
+#define BIGNUM 20000
 
 int main(void) {
-
-	// setAllocator(malloc);
 
 	Arena p;
 	initArena(&p);
 
-	uint64_t *arr = palloc(&p, BIG_NUMBER * sizeof(uint32_t));
-	for(uint64_t i = 0; i < BIG_NUMBER; i++) {
-		arr[i] = i * i;
-		printf("%" PRIu64 ",%" PRIu64 "\n", i, arr[i]);
-	}
+	uint64_t **arr = palloc(&p, BIGNUM * sizeof(uint64_t*));
 
+	for(uint64_t i = 0; i < BIGNUM; i++) {
+
+		arr[i] = palloc(&p, BIGNUM * sizeof(uint64_t));
+
+		for(uint64_t j = 0; j < BIGNUM; j++) {
+			arr[i][j] = i * j;
+		}
+	}
+	printArenaInfo(&p);
 	termArena(&p);
 	return 0;
 }
