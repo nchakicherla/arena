@@ -10,7 +10,7 @@ single-header arena allocator in C99
 - `void *pzalloc(*arena, size)` is used like `malloc`, but zeroes using `memset`
 - `void *pGrowAlloc(*arena, *ptr, old_size, new_size)`  can grow allocations and copy contents, somewhat like `realloc` but only supporting increases in size
 - `char *pNewStr(*arena, *str)` is like `strcpy` but allocates the new null-terminated string in the arena
-- `int resetArena(*arena)` will free all pages in the linked-list, page using the largest page size before reset
+- `int resetArena(*arena)` will free all pages, and initialize a new page using the last page size
 
 #### Example
 ```
