@@ -1,4 +1,6 @@
 # arena allocator
+(not recommended due to lack of alignment)
+
 single-header arena allocator in C99
 
 [Inspired by [Untangling Lifetimes: The Arena Allocator](https://www.rfleury.com/p/untangling-lifetimes-the-arena-allocator)]
