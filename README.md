@@ -1,8 +1,8 @@
 # arena allocator
 ~~(not recommended due to lack of alignment)~~
+updated to support alignment for cross-platform compatibility. speed untested <br>
 
 single-header arena allocator in C99
-updated to support alignment for cross-platform compatibility. speed untested
 
 [Inspired by [Untangling Lifetimes: The Arena Allocator](https://www.rfleury.com/p/untangling-lifetimes-the-arena-allocator)]
 
