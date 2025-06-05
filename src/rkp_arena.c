@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <inttypes.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdalign.h>
 
 #define MEMORY_HOG_FACTOR 8
@@ -99,7 +100,7 @@ void *rkp_arena_alloc(rkp_arena *arena, size_t size, size_t alignment) {
 
 		new_block = rkp_alloc_init_block(new_block_size);
 		if(!new_block) {
-			return NULL;
+			exit(3); // rkp_alloc_init_block itself should exit() if malloc fails but putting exit(3) here anyway
 		}
 		last_block->next = new_block;
 		last_block = new_block;
@@ -126,9 +127,12 @@ void *rkp_arena_alloc(rkp_arena *arena, size_t size, size_t alignment) {
 
 void *rkp_arena_zalloc(rkp_arena *arena, size_t size, size_t alignment) {
 	void* output = rkp_arena_alloc(arena, size, alignment);
+	/*
 	for(size_t i = 0; i < size; i++) {
 		((char *)output)[i] = '\0';
 	}
+	*/
+	memset(output, 0, size);
 	return output;
 }
 
