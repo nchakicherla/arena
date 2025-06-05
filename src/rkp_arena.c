@@ -9,7 +9,7 @@
 #define MEMORY_HOG_FACTOR 8
 #define DEF_BLOCK_SIZE 4096
 
-static rkp_arena_block *newInitBlock(size_t block_size) {
+static rkp_arena_block *rkp_alloc_init_block(size_t block_size) {
 	
 	rkp_arena_block *block =  malloc(sizeof(rkp_arena_block));
 	if(!block) {
@@ -32,7 +32,7 @@ static rkp_arena_block *newInitBlock(size_t block_size) {
 int rkp_arena_init(rkp_arena *arena) {
 	size_t block_size = DEF_BLOCK_SIZE;
 
-	arena->first_block = newInitBlock(block_size);
+	arena->first_block = rkp_alloc_init_block(block_size);
 
 	arena->bytes_used = 0;
 	arena->bytes_allocd = sizeof(rkp_arena) + sizeof(rkp_arena_block) + block_size;
@@ -69,7 +69,7 @@ int rkp_arena_reset(rkp_arena *arena) { // preserves last_block_size from pre-re
 		curr = next;
 	}
 
-	arena->first_block = newInitBlock(arena->last_block_size);
+	arena->first_block = rkp_alloc_init_block(arena->last_block_size);
 	arena->last_block = arena->first_block;
 
 	arena->next_free = arena->first_block->data;
@@ -97,7 +97,7 @@ void *rkp_arena_alloc(rkp_arena *arena, size_t size, size_t alignment) {
 			new_block_size = new_block_size * 2;
 		}
 
-		new_block = newInitBlock(new_block_size);
+		new_block = rkp_alloc_init_block(new_block_size);
 		if(!new_block) {
 			return NULL;
 		}

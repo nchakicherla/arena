@@ -15,6 +15,9 @@ simple arena allocator in C99 with allocation alignment using `alignof()` macro
 - **`char *rkp_arena_new_str(char *str, rkp_arena *arena)`** is like `strcpy` but allocates the new null-terminated string within the specified arena
 - **`int rkp_arena_reset(rkp_arena *arena)`** will free all pages, and initialize a new page using the last page size.
 
+#### Failure Behavior
+- `exit()` is called if `malloc()` fails
+
 #### Example
 ```
 #include <stdio.h>
