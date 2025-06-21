@@ -149,9 +149,12 @@ char *rkp_arena_new_str(char *str, rkp_arena *arena) {
 
 	output = rkp_arena_alloc(arena, len + 1, alignof(char));
 
+	/*
 	for(size_t i = 0; i < len; i++) {
 		output[i] = str[i];
 	}
+	*/
+	memcpy(output, str, len);
 	output[len] = '\0';
 	return output;
 }
