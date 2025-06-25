@@ -120,7 +120,7 @@ void *rkp_arena_alloc(rkp_arena *arena, size_t size, size_t alignment) {
 	arena->next_free = (void *)(aligned + size);
 	arena->next_free_size  = arena->next_free_size - (size + padding);
 
-	arena->bytes_used += size;
+	arena->bytes_used += size + padding;
 
 	return output;
 }
