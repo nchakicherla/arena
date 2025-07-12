@@ -7,7 +7,7 @@
 #include <string.h>
 #include <stdalign.h>
 
-#define MEMORY_HOG_FACTOR 8
+#define MEMORY_HOG_FACTOR 4
 #define DEF_BLOCK_SIZE 4096
 
 static rkp_arena_block *rkp_alloc_init_block(size_t block_size) {
